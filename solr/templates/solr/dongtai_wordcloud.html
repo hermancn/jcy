@@ -1,0 +1,63 @@
+{% extends "solr/search.html" %}
+{% load staticfiles %}
+{% block other_head %}
+<link href="{% static 'bookmark/css/jstree/style.min.css' %}" rel="stylesheet">
+<link href="{% static 'bookmark/css/tagit/jquery.tagit.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/tagit/tagit.ui-zendesk.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/jquery-ui/jquery-ui.css' %}" rel="stylesheet" type="text/css">
+
+<style>
+
+</style>
+
+
+
+{% endblock %}
+
+{% block subtitle %}
+{%if '/index/' in request.path%}今日更新{% else %}首页{% endif %}-
+{% endblock %}
+
+{% block content %}
+<div id="canvas-container" align="center">
+    <canvas id="canvas" height="1000px" width="800px"></canvas>
+</div>
+{% endblock %}
+
+
+{% block other_footer %}
+<script src="{% static 'solr/js/wordcloud2.js' %}"></script>
+  <script>
+    var keywordslist = {{ keywords_freq | safe }};
+    function factor(){
+        var maxFontSize = $('#canvas').width() * 0.2;
+        var maxCount = parseInt(keywordslist[0][1]);
+        var rate = maxFontSize / maxCount;
+        return rate;
+    }
+
+    options = eval({
+        "list": keywordslist,   
+        "minsize": 14,
+        /*"shape": function(theta){var thetaPrime = theta%(2*Math.PI/4); return (Math.cos(thetaPrime)+Math.sin(thetaPrime)); },*/
+        "shape": "circle",
+        "gridSize": 8,
+        "weightFactor": factor(),
+        "rotateRatio": 0,
+        "hover": function() {
+           document.getElementById('canvas').style.cursor = 'hand'; 
+        },
+        "click": function(keyword) {
+            window.location.href = "{% url 'dongtai_keywords' %}?keywords=" + keyword;
+        },
+        "color": 'random-dark',
+        "backgroundcolor": '#f0f0f0',
+        "fontfamily": 'hiragino mincho pro, serif',
+    });
+
+    WordCloud(document.getElementById('canvas'), options );
+
+ </script>
+{% endblock %}
+
+

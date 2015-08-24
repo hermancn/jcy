@@ -1,0 +1,36 @@
+{% load wiki_entity_tag %}
+{% if facets %}
+    {% for facet_field, facet_field_display, facet_values, selected_facet in facets %}
+        <div class='col-md-12'>
+            <h3>{{ facet_field_display }}</h3>
+            <ol class="list-unstyled">
+            {% for facet_item, facet_item_count in facet_values.items %}
+                {% if forloop.counter0 == 10 %}
+                    <div class="tohide hidden">
+                {% endif %}
+            <li>{% if facet_item in selected_facet %}<a href="{% url 'dongtai_all' %}?rfacet={{ facet_field }}:{{ facet_item | urlencode }}"><span class="glyphicon glyphicon-remove"></span></a>{% endif %} <a href="{% url 'dongtai_all' %}?fq={{ facet_field }}:{{ facet_item | urlencode }}">{% if facet_item %}{{ facet_item | wiki_entity_link }}{% else %} UNKNOWN{% endif %}({{ facet_item_count }})</a></li>
+                {%if forloop.counter0 >= 10 and forloop.last %}
+                    </div> <!--tohide hidden--> 
+                    <div><button class="hidebutton">显示所有</button></div>
+                {% endif %}
+            {% endfor %}
+            <hr>
+            </ol>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<script>
+    $('.hidebutton').click(function(){
+        if($(this).text() == '显示所有'){
+            $(this).parent().parent().find('.tohide').removeClass("hidden");
+            $(this).text('隐藏');
+        }else{
+            $(this).parent().parent().find('.tohide').addClass("hidden");
+            $(this).text('显示所有')
+        }
+    });
+
+ </script>
+
+

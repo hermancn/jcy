@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>News Explorer</title>
+    {% load staticfiles %}
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'solr/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'solr/css/style.css' %}" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'solr/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'solr/js/html5shiv.min.js' %}"></script>
+      <script src="{% static 'solr/js/respond.min.js' %}"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="search-masthead">
+      <div class="container">
+        <nav class="search-nav">
+          <a class="search-nav-item active" href="/search">Home</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="row text-center search-header">
+		{# Display a form #}
+		<form class="form-inline" role="form" method="get">
+		  <input type="text" name="q" size='70' class="form-control" placeholder="请输入检索式..." type="search" {% if q %} value="{{ q }}" {% endif %}}>
+		  <select class="form-control" name="sort">
+		  {% for sort_value, sort_display in available_sort %}
+			<option value='{{ sort_value }}' {%if sort_value == sort%} selected="selected" {%endif%}>{{sort_display}}</option>
+	      {% endfor %}
+		  </select>
+		  <div class="checkbox">
+		  <label>
+			<input type="checkbox" value="{{page_url}}" name="in_result">在当前结果中检索
+		  </label>
+		  </div>
+		  <button type="submit" class="btn btn-primary">检索</button>
+		</form>
+      </div>
+
+      <div class="row">
+
+        <div class="col-sm-8 search-main">
+        {% if page %}
+          <div>
+            <p>共找到{{ page.total }}篇文档，目前显示第{{ page.current_page_start }}到第{{ page.current_page_end }}篇。</p>
+          </div>
+        {% for doc in results %}
+          <div class="search-post">
+            <h2 class="search-post-title">{{ doc.name | safe  }}</h2>
+            <p class="search-post-meta">{{ doc.parsed_date }} <a href="#">{{ doc.source }}</a></p>
+
+            <p>{{ doc.description | safe }}</p>
+          </div>
+        {% endfor %}
+        {% else %}
+        <p>没有找到文档。</p>
+        {% endif %}
+
+		<ul class="pagination">
+		  {% if page.pre_page %}<li><a href="?{{ page_url }}&start={{ page.pre_page_start }}">&laquo;</a></li>{% endif %}
+          {% for page_id, page_start in page.pages %}
+          {% if page.current_page == page_id %}
+          <li class="active"><a href="?{{ page_url }}&start={{ page_start }}">{{ page_id }} <span class="sr-only">(current)</span></a></li>
+          {% else %}
+		  <li><a href="?{{ page_url }}&start={{ page_start }}">{{ page_id }}</a></li>
+		  {% endif %}
+		  {% endfor %}
+		  {% if page.next_page %}<li><a href="?{{ page_url }}&start={{ page.next_page_start }}">&raquo;</a></li>{% endif %}
+		</ul>
+
+        </div><!-- /.blog-main -->
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          {% if facets %}
+          {% for facet_field, facet_field_display, facet_values, selected_facet in facets %}
+          <div class="sidebar-module">
+            <h4>按{{ facet_field_display }}浏览</h4>
+            <ol class="list-unstyled">
+            {% for facet_item,facet_item_count in facet_values.items %}
+              <li>
+              {% if facet_item in selected_facet %}<a href="?{{ page_url }}&rfacet={{ facet_field }}:{{ facet_item | urlencode }}"><span class="glyphicon glyphicon-remove"></span></a>{% endif %} <a href="?{{ page_url }}&fq={{ facet_field }}:{{ facet_item | urlencode }}">{% if facet_item %}{{ facet_item }}{% else %} UNKNOWN{% endif %}({{ facet_item_count }})</a></li>
+            {% endfor %}
+            </ol>
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div><!-- /.blog-sidebar -->
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <div class="search-footer">
+      <p class="text-center">Copyright 2014</p>
+    </div>
+
+    <script src="{% static 'solr/js/jquery.min.js' %}"></script>
+    <script src="{% static 'solr/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'solr/js/docs.min.js' %}"></script>
+  </body>
+</html>
+
+

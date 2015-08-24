@@ -1,0 +1,76 @@
+{% extends "solr/search.html" %}
+{% load staticfiles %}
+{% block other_head %}
+<link href="{% static 'solr/css/jstree/style.min.css' %}" rel="stylesheet">
+<link href="{% static 'solr/css/jquery-ui/jquery-ui.css' %}" rel="stylesheet" type="text/css">
+
+{% endblock %}
+
+{% block subtitle %}
+{%if '/new/' in request.path%}今日更新{% else %}首页{% endif %}-
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 blog-sidebar">
+            <!--<div class="span2 sidebar">-->
+            <div id="tree">
+            </div>
+        </div><!-- /.blog-sidebar -->
+
+        <div class="col-md-8 search-main" id="result">
+            <!--<div class="span6 main" id="result">-->
+        </div><!-- /.blog-main -->
+
+    </div><!-- /.row -->
+        </div><!-- /.container -->
+{% endblock %}
+
+
+{% block other_footer %}
+<script src="{% static 'solr/js/jstree/jstree.min.js' %}"></script>
+  <script>
+  $(function () {
+    $.get("?{%if page_url %}{{ page_url }}&{%endif%}template=solr/dongtai_result.html&now={% now "Hi" %}", function(result){
+	    $('#result').html(result);
+    });
+
+
+    $('#tree').jstree({ 'core' : {
+		'data' : [
+			{% for node in pivot_nodes.0 %}
+			{ text: "{{ node.value }} ({{node.count}})",a_attr : {"href": "?{% if page_url %}{{ page_url }}&{%endif%}fq=site:{{node.value|urlencode}}"},
+			   {% if node.pivot %}
+			   children: [
+          		  {% for child in node.pivot %}
+		            { text : "{{ child.value }} ({{child.count}})</span>", a_attr : {"href": "?{% if page_url %}{{ page_url }}&{%endif%}fq=site:{{node.value|urlencode}}&fq=category:{{child.value|urlencode}}"} },
+				  {% endfor %}
+				  ]
+			   {% endif %}
+			   },
+			{% endfor %}
+		]
+	} }).bind("select_node.jstree", function (e, data) {
+        $.get(data.node.a_attr["href"] + "&template=solr/dongtai_result.html", function(result){
+            $('#result').html(result);
+            $('#in_result').attr("value", decodeURIComponent(data.node.a_attr["href"].substring(1)));
+        });
+    }) ;
+
+    $('.hidebutton').click(function(){
+        if($(this).text() == '显示所有'){
+            $(this).parent().parent().find('.tohide').removeClass("hidden");
+            $(this).text('隐藏');
+        }else{
+            $(this).parent().parent().find('.tohide').addClass("hidden");
+            $(this).text('显示所有')
+        }
+    });
+  });
+
+  </script>
+{% endblock %}
+
+

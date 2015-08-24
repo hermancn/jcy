@@ -1,0 +1,77 @@
+{% extends "solr/search.html" %}
+{% load staticfiles %}
+{% block other_head %}
+<link href="{% static 'bookmark/css/jstree/style.min.css' %}" rel="stylesheet">
+<link href="{% static 'bookmark/css/tagit/jquery.tagit.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/tagit/tagit.ui-zendesk.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/jquery-ui/jquery-ui.css' %}" rel="stylesheet" type="text/css">
+
+{% endblock %}
+
+{% block subtitle %}
+{%if '/new/' in request.path%}今日更新{% else %}首页{% endif %}-
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+
+
+      <div class="row">
+        <div class="col-sm-4 blog-sidebar">
+        <div id="tree">
+		<ul>
+			{% for node in pivot_nodes.0 %}
+				<li>
+
+					<a href="?{{ page_url }}&fq=site:{{node.value|urlencode}}">{{ node.value }} <span class="badge">{{node.count}}</span></a>
+					{% if node.pivot %}
+						<ul>
+							{% for child in node.pivot %}
+							<li><a href="?{{ page_url }}&fq=site:{{node.value|urlencode}}&fq=category:{{child.value|urlencode}}">{{ child.value }} <span class="badge">{{child.count}}</span></a></li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+		</div>
+
+        </div><!-- /.blog-sidebar -->
+
+        <div class="col-sm-8 search-main" id="result">
+        </div><!-- /.blog-main -->
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+{% endblock %}
+
+
+{% block other_footer %}
+<script src="{% static 'bookmark/js/jstree/jstree.min.js' %}"></script>
+<script src="{% static 'bookmark/js/jquery-ui.min.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'bookmark/js/datepicker-zh-CN.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'bookmark/js/tagit/tag-it.min.js' %}" type="text/javascript" charset="utf-8"></script>
+  <script>
+  $(function () {
+    $.get("?{%if page_url%}{{ page_url }}&{%endif%}template=solr/dongtai_result.html&now={% now "Hi" %}", function(result){
+	    $('#result').html(result);
+    });
+
+    $('#tree').jstree().bind("select_node.jstree", function (e, data) {
+        $.get(data.node.a_attr["href"] + "&template=solr/dongtai_result.html", function(result){
+			    $('#result').html(result);
+			    $('#in_result').attr("value", decodeURIComponent(data.node.a_attr["href"].substring(1)));
+        });
+
+    }) ;
+
+
+	$( "#date_from" ).datepicker({ dateFormat: "yy-mm-dd"});
+	$( "#date_to" ).datepicker({ dateFormat: "yy-mm-dd" });
+  });
+
+  </script>
+{% endblock %}
+
+

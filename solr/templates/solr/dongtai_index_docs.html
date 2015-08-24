@@ -1,0 +1,39 @@
+        {% if page %}
+          <div>
+              最新动态
+          </div>
+        {% for doc in results %}
+			<!--<div class="hidden doc_id">{{ doc.url }}</div>-->
+            <!--<div class="hidden crawl_date">{{ doc.crawled }}</div>-->
+			<li><a href="{% url 'dongtai_detail'%}?id={{doc.docno}}&url={{ doc.url | urlencode}}&site={{ doc.site | urlencode}}{%if q%}&q={{q|urlencode}}{%endif%}" target = "_blank">{{ doc.title | striptags  }}</a> <a href="?fq=site:{{ doc.site | urlencode }}" class="search-post-meta" >{{ doc.site }}</a> </li>
+            <!--<p class="search-post-meta">{{ doc.crawled_date|date:"Y-m-d H:i"}} <a href="?fq=site:{{ doc.site | urlencode }}">{{ doc.site }}</a></p>-->
+        {% endfor %}
+
+        {% else %}
+        <p>没有找到文档。</p>
+        {% endif %}
+
+		<ul class="pagination">
+            {% if page.pre_page %}<li><a href="{% url 'docs_result' %}?start={{ page.pre_page_start }}" class="page">&laquo;</a></li>{% endif %}
+          {% for page_id, page_start in page.pages %}
+          {% if page.current_page == page_id %}
+          <li class="active"><a href="{% url 'docs_result' %}?start={{ page_start }}" class="page">{{ page_id }} <span class="sr-only">(current)</span></a></li>
+          {% else %}
+          <li><a href="{% url 'docs_result' %}?start={{ page_start }}" class="page">{{ page_id }}</a></li>
+		  {% endif %}
+		  {% endfor %}
+          {% if page.next_page %}<li><a href="{% url 'docs_result' %}?start={{ page.next_page_start }}" class="page">&raquo;</a></li>{% endif %}
+		</ul>
+    <script>
+    $(function () {
+
+    $('a.page').click(function(){
+        $.get($(this).attr('href'), function(result){
+	    $('#result').html(result);
+        });
+        return false;
+
+    });
+	
+	});
+    </script>

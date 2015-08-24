@@ -1,0 +1,90 @@
+{% extends "solr/search.html" %}
+{% load staticfiles %}
+{% block subtitle %}
+信息检索-
+{% endblock %}
+
+{% block other_head %}
+<link href="{% static 'bookmark/css/tagit/jquery.tagit.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/tagit/tagit.ui-zendesk.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/jquery-ui/jquery-ui.css' %}" rel="stylesheet" type="text/css">
+
+{% endblock %}
+
+    <div class="container">
+{% block search_form %}
+
+      <div class="row text-center search-header">
+		{# Display a form #}
+		<form class="form-inline" role="form" method="get" action="{% url 'entity_search'%}">
+
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="请输入实体名称..."  id="entity_q" name="q" size="70">
+        </div>
+        <button type="submit" class="btn btn-primary">找实体</button>
+      </form>
+
+	</div>
+{% endblock %}
+
+{% block result_docs %}
+        {% if page %}
+          <div>
+            <p>共找到{{ page.total }}个实体，目前显示第{{ page.current_page_start }}到第{{ page.current_page_end }}个。</p>
+          </div>
+        {% for doc in results %}
+		  <div class="search-post">
+			<h2 class="search-post-title"><a href="{% url 'organization_entity' %}?entity={{doc.id}}" target = "_blank">{{ doc.title | safe  }}</a></h2>
+
+			{% if doc.description %}
+			<p>{%if doc.image %}<img src="http://211.166.64.151:8080{{doc.image}}" alt="Image" class="pull-left" width="140" height="120" >{%endif%}{{ doc.description | safe }}</p>
+			{% endif %}
+		  </div>
+        {% endfor %}
+
+        {% else %}
+        <p>没有找到文档。</p>
+        {% endif %}
+
+		<ul class="pagination">
+		  {% if page.pre_page %}<li><a href="?{{ page_url }}&start={{ page.pre_page_start }}" class="page">&laquo;</a></li>{% endif %}
+          {% for page_id, page_start in page.pages %}
+          {% if page.current_page == page_id %}
+          <li class="active"><a href="?{{ page_url }}&start={{ page_start }}" class="page">{{ page_id }} <span class="sr-only">(current)</span></a></li>
+          {% else %}
+		  <li><a href="?{{ page_url }}&start={{ page_start }}" class="page">{{ page_id }}</a></li>
+		  {% endif %}
+		  {% endfor %}
+		  {% if page.next_page %}<li><a href="?{{ page_url }}&start={{ page.next_page_start }}" class="page">&raquo;</a></li>{% endif %}
+		</ul>
+{% endblock %}
+{% block other_footer %}
+
+    <!-- This script sets up the autocomplete URL for the search field -->
+    <script>
+    <script>
+    $(function(){
+      $('#entity_q').devbridgeAutocomplete({
+          serviceUrl:'{% url 'suggest' %}',
+          paramName: 'q',
+          params:{
+             'q': function() { return $("#entity_q").val();},
+             'wt': 'velocity',
+             'qt': 'ac',
+             'v.template': 'suggest',
+             'rows': 20
+           },
+           groupBy: 'category',
+           onSelect: function(suggestion) {
+             thisUrl = "{% url 'organization_entity' %}?entity=" + suggestion.data['wiki']
+             location.href = thisUrl;
+             //$('#entity_search').submit();
+           }
+         }
+     );
+
+    });
+
+    </script>
+
+{% endblock %}

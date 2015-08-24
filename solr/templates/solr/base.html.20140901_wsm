@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{% block subtitle %}{% endblock %}动态信息转播服务系统</title>
+    {% load staticfiles %}
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'solr/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'solr/css/style.css' %}" rel="stylesheet">
+	<!--addby cdstic-->
+    <link href="{% static 'solr/css/new.css' %}" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'solr/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'solr/js/html5shiv.min.js' %}"></script>
+      <script src="{% static 'solr/js/respond.min.js' %}"></script>
+    <![endif]-->
+    <script src="{% static 'solr/js/jquery.min.js' %}"></script>
+{% block other_head %}
+{% endblock %}
+
+  </head>
+  <!--
+<style>
+   .navbar-default{
+     background:#062A44;
+   }
+  
+</style>
+-->
+  <body>
+
+
+{% block menu %}
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{%url 'home'%}">动态信息转播</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li {%if 'dongtai/all' in request.get_full_path or request.get_full_path == '/'%}class="active"{%endif%}><a class="search-nav-item" href="{%url 'dongtai_all'%}">首页</a></li>
+        <li {%if 'dongtai/new' in request.get_full_path%}class="active"{%endif%}><a class="search-nav-item" href="{%url 'dongtai_new'%}">今日更新</a></li>
+		{% if user.is_authenticated %}
+          <li {%if 'mytopic' in request.get_full_path%}class="active"{%endif%}><a class="search-nav-item" href="{%url 'mytopic_list'%}">我的订阅</a></li>
+          <li {%if 'mytag' in request.get_full_path%}class="active"{%endif%}><a class="search-nav-item" href="{%url 'mytag_doc_list'%}">我的标签</a></li>
+		{% endif %}
+
+
+      </ul>
+      {% if 'q' not in request.GET %}
+      <form class="navbar-form navbar-left" role="search" method="get" action="{% url 'dongtai_search'%}" target="_blank">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q">
+        </div>
+        <button type="submit" class="btn btn-default">检索</button>
+      </form>
+      {% endif %}
+
+
+
+      <ul class="nav navbar-nav navbar-right">
+		{% if user.is_authenticated %}
+		  <li><a href="/password_change">修改密码</a></li>
+		  <li><a href="/logout?next={%url 'dongtai_new'%}">退出</a></li>
+		{% else %}
+		<form role="login" class="navbar-form navbar-right" method="post" action="{%url 'login'%}">
+		  {% csrf_token %}
+		  <div class="form-group">
+			<input type="text" class="form-control" id="username" name="username" placeholder="用户名" size="10">
+			<input type="password" class="form-control" id="password" name="password" placeholder="密码" size="10">
+		  </div>
+		  <input type="hidden" name="next" value="{{request.get_full_path}}"/>
+		  <button type="submit" class="btn btn-default">登录</button>
+		</form>
+		{% endif %}
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+    <div class="search-footer">
+      <p class="text-center">Copyright 2014</p>
+    </div>
+
+    <script src="{% static 'solr/js/bootstrap.min.js' %}"></script>
+{% block other_footer %}
+{% endblock %}
+
+  </body>
+</html>
+
+

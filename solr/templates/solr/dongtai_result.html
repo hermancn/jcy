@@ -1,0 +1,146 @@
+        {% if page %}
+          <div>
+            <p>共找到{{ page.total }}篇文档，目前显示第{{ page.current_page_start }}到第{{ page.current_page_end }}篇。</p>
+          </div>
+         
+        {% for doc in results %}
+		  <div class="search-post" >
+			<div class="hidden doc_id">{{ doc.id }}</div>
+			<div class="hidden doc_title">{{ doc.title | striptags }}</div>
+			<div class="hidden crawl_date">{{ doc.processed_at }}</div>
+			<h3 class="search-post-title"><a href="{% url 'dongtai_detail'%}?id={{doc.id}}&url={{ doc.url | urlencode}}&url={{ doc.url | urlencode}}{%if q%}&q={{q|urlencode}}{%endif%}" target = "_blank">{% autoescape off%}{{ doc.title}}{% endautoescape %}</a></h3>
+            <p class="search-post-meta">{{ doc.processed_at }} </p>
+
+            {% comment %}
+			{% if doc.text %}
+                <p>{{ doc.text | striptags }}</p>
+			{% endif %}
+            {% endcomment %}
+            
+
+			{% if user.is_authenticated %}
+            <form class="form" method="post" id='post-form'>
+                
+                {% csrf_token %}
+                {% if doc.msg_time %}
+                    <label for="msg_time">处理时间: {{doc.msg_time}}</label><br>
+                {% endif %}
+                <input type="hidden" id="article_id" value="{{ doc.id }}"/>
+                <input type="text" placeholder="处理意见" id="msg"
+                    class="form-control" value="{% if doc.handle_msg %}{{ doc.handle_msg }}{%endif%}"/>
+                {% comment %}
+                <input type="submit" id="msg_submit" class="btn btn-warning" value="提交" />
+                {% endcomment %}
+
+                <div class="dropdown">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        {% if doc.article_status %}
+                            {{doc.article_status}}
+                        {% else %}
+                        未处理
+                        {% endif %}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#" id="no_handle">不处理</a></li>
+                        <li><a href="#" id="already_handle">已处理</a></li>
+                    </ul>
+                </div>
+
+            </form>
+			{% endif %}
+
+		  </div>
+          <hr>
+		  <div class="clearfix">
+		  </div>
+        {% endfor %}
+
+        {% else %}
+        <p>没有找到文档。</p>
+        {% endif %}
+
+		<ul class="pagination">
+            {% if page.pre_page %}<li><a href="{% url 'docs_result' %}?{{ page_url }}&start={{ page.pre_page_start }}" class="page">&laquo;</a></li>{% endif %}
+          {% for page_id, page_start in page.pages %}
+          {% if page.current_page == page_id %}
+          <li class="active"><a href="{% url 'docs_result' %}?{{ page_url }}&start={{ page_start }}" class="page">{{ page_id }} <span class="sr-only">(current)</span></a></li>
+          {% else %}
+          <li><a href="{% url 'docs_result' %}?{{ page_url }}&start={{ page_start }}" class="page">{{ page_id }}</a></li>
+		  {% endif %}
+		  {% endfor %}
+		  {% if page.next_page %}<li><a href="{% url 'docs_result'%}&start={{ page.next_page_start }}" class="page">&raquo;</a></li>{% endif %}
+		</ul>
+    <script>
+    $(function () {
+
+    $('a.page').click(function(){
+        $.get($(this).attr('href'), function(result){
+	    $('#result').html(result);
+        });
+        return false;
+
+    });
+
+    $(".dropdown-menu li a").click(function(){
+        $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+        $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+        var click_value = $(this).text();
+        create_post(click_value);
+    });
+
+    /*
+    $('#post-form').on('submit', function(event){
+        event.preventDefault();
+        create_post();
+    });
+    */
+    
+
+    });
+
+    // using jQuery
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    function create_post(click_value) {
+        $.ajax({
+            url: "{% url 'dongtai_all' %}",
+            type: 'POST',
+            data: {msg: $('#msg').val(), article_id: $('#article_id').val(),
+                article_status: click_value},
+            success: function(json) {
+                console.log('success');
+            },
+            error: function(xhr, errmsg, err){
+                console.log(err);
+            },
+        });
+    }
+    </script>

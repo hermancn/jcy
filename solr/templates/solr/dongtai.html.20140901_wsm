@@ -1,0 +1,116 @@
+{% extends "solr/search.html" %}
+{% load staticfiles %}
+{% block subtitle %}
+信息检索-
+{% endblock %}
+
+{% block other_head %}
+<link href="{% static 'bookmark/css/tagit/jquery.tagit.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/tagit/tagit.ui-zendesk.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'bookmark/css/jquery-ui/jquery-ui.css' %}" rel="stylesheet" type="text/css">
+
+{% endblock %}
+
+{% block result_docs %}
+        {% if page %}
+          <div>
+            <p>共找到{{ page.total }}篇文档，目前显示第{{ page.current_page_start }}到第{{ page.current_page_end }}篇。</p>
+          </div>
+        {% for doc in results %}
+		  <div class="search-post">
+			<div class="hidden doc_id">{{ doc.url }}</div>
+			<div class="hidden doc_title">{{ doc.title | striptags }}</div>
+			<div class="hidden crawl_date">{{ doc.crawled }}</div>
+			<h2 class="search-post-title"><a href="{% url 'dongtai_detail'%}?id={{ doc.url | urlencode}}&site={{ doc.site | urlencode}}{%if q%}&q={{q|urlencode}}{%endif%}" target = "_blank">{{ doc.title | safe  }}</a></h2>
+			<p class="search-post-meta">{{ doc.crawled_date|date:"Y-m-d H:i"}} <a href="?fq=site:{{ doc.site | urlencode }}">{{ doc.site }}</a></p>
+
+			{% if doc.description %}
+			<p>{%if doc.image %}<img src="http://192.168.0.14:8080{{doc.image}}" alt="Image" class="pull-left" width="140" height="120" >{%endif%}{{ doc.description | safe }}</p>
+			{% endif %}
+			{% if user.is_authenticated %}
+			<form class="form-inline tag">
+			   <label class="control-label" for="tag{{forloop.counter}}">添加我的标签:</label>
+			   <input name="tags" id="tag{{forloop.counter}}" class="singleFieldTags" value="{% for my_tag in doc.my_tags %}{{ my_tag }},{% empty %}{% endfor %}" query="source_title={{ doc.title | striptags | urlencode}}&source_id={{ doc.url |urlencode }}&crawl_date={{doc.crawled}}" source_id="{{ doc.url |urlencode }}"/>
+			</form>
+			{% endif %}
+		  </div>
+        {% endfor %}
+
+        {% else %}
+        <p>没有找到文档。</p>
+        {% endif %}
+
+		<ul class="pagination">
+		  {% if page.pre_page %}<li><a href="?{{ page_url }}&start={{ page.pre_page_start }}" class="page">&laquo;</a></li>{% endif %}
+          {% for page_id, page_start in page.pages %}
+          {% if page.current_page == page_id %}
+          <li class="active"><a href="?{{ page_url }}&start={{ page_start }}" class="page">{{ page_id }} <span class="sr-only">(current)</span></a></li>
+          {% else %}
+		  <li><a href="?{{ page_url }}&start={{ page_start }}" class="page">{{ page_id }}</a></li>
+		  {% endif %}
+		  {% endfor %}
+		  {% if page.next_page %}<li><a href="#" class="page">&raquo;</a></li>{% endif %}
+		</ul>
+{% endblock %}
+{% block other_footer %}
+
+<script src="{% static 'bookmark/js/jstree/jstree.min.js' %}"></script>
+<script src="{% static 'bookmark/js/jquery-ui.min.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'bookmark/js/datepicker-zh-CN.js' %}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'bookmark/js/tagit/tag-it.min.js' %}" type="text/javascript" charset="utf-8"></script>
+  <script>
+  $(function () {
+    $('#jstree').jstree().bind("select_node.jstree", function (e, data) {
+        {% if select_id %}
+        if(data.node.id != '{{select_id}}')
+        {% endif %}
+        document.location.href = data.node.a_attr["href"] + "&select_id=" + data.node.id;
+    }) ;
+    {% if select_id %}
+    $.jstree.reference('#jstree').select_node('{{select_id}}', true);
+    {% endif %}
+
+
+	$('.singleFieldTags').tagit({
+        minLength: 2,
+        tagSource: function(search, showChoices) {
+		    $.ajax({
+		      url: "{%url 'mytag'%}",
+		      data: {term: search.term, action:"prefix"},
+		      success: function(choices) {
+		        showChoices(choices);
+		      }
+		    });
+		},
+		allowSpaces: true,
+		caseSensitive: false,
+		afterTagAdded: function(evt, ui) {
+			if (!ui.duringInitialization) {
+			    $.getJSON("{%url 'mytag'%}?" + $(this).attr('query') +"&tag=" + encodeURIComponent(ui.tagLabel));
+			}
+		},
+		afterTagRemoved: function(evt, ui) {
+			$.getJSON("{%url 'mytag'%}?action=delete&source_id=" + $(this).attr('source_id') +"&tag=" + encodeURIComponent(ui.tagLabel));
+		},
+		onTagClicked: function(event, ui) {
+			document.location.href = "{%url 'mytag_doc_list'%}?tag=" + encodeURIComponent(ui.tagLabel);
+        },
+
+	});
+
+	$( "#date_from" ).datepicker({ dateFormat: "yy-mm-dd"});
+	$( "#date_to" ).datepicker({ dateFormat: "yy-mm-dd" });
+    $('.hidebutton').click(function(){
+        if($(this).text() == '显示所有'){
+            $(this).parent().parent().find('.tohide').removeClass("hidden");
+            $(this).text('隐藏');
+        }else{
+            $(this).parent().parent().find('.tohide').addClass("hidden");
+            $(this).text('显示所有')
+
+        }
+
+    });
+  });
+  </script>
+{% endblock %}

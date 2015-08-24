@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{% block subtitle %}{% endblock %}动态信息转播服务系统</title>
+    {% load staticfiles %}
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'solr/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'solr/css/style.css' %}" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'solr/js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'solr/js/html5shiv.min.js' %}"></script>
+      <script src="{% static 'solr/js/respond.min.js' %}"></script>
+    <![endif]-->
+    <script src="{% static 'solr/js/jquery.min.js' %}"></script>
+    <script src="{% static 'solr/js/jquery.autocomplete.js' %}"></script>
+{% block other_head %}
+{% endblock %}
+
+  </head>
+<style>
+    .navbar-default{
+	 background:url("{% static 'solr/images/header2.jpg' %}") repeat-x;
+	 margin:0 auto;
+   }
+    .navbar-nav li a{
+    color:#ffffff;
+	}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+    background-color:  #1bafd5;
+}
+
+
+   .tongzhi{
+	width:100%;
+    padding-top: 2px;
+    padding-bottom: 2px;
+     background:#1bafd5;
+	 height:25px;
+     text-align:center;
+	 color:#4a4d4e;
+	 line-height:25px;
+   }
+
+   .tongzhi a{
+       color:#C23E0D;
+       text-decoration:none;
+       font-weight:800;}
+       a:hover,a:focus{color:#2a6496;text-decoration:underline}
+       .search-nav-item{
+           color:#ffffff;
+       }
+
+</style>
+  <body>
+
+
+{% block menu %}
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{%url 'dongtai_all' %}"><img src="{% static 'solr/images/logo2.jpg' %}"></a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li {%if 'dongtai/all' in request.get_full_path or request.get_full_path == '/'%}class="active"{%endif%}> <a href="{%url 'dongtai_all'%}"> <font style="color:#FFFFFF; font-weight:800; font-size:130%;">首页</font> </a> </li>
+        {% comment %}
+        <li {%if 'dongtai/new' in request.get_full_path%}class="active"{%endif%}> <a href="{%url 'dongtai_new'%}"> <font style="color:#FFFFFF; font-weight:800;font-size:130%;">最新动态</font> </a> </li>
+        {% endcomment %}
+
+		{% if user.is_authenticated %}
+        {% comment %}
+		  <li {%if 'bookmark' in request.get_full_path%}class="active"{%endif%}> <a href="{%url 'bookmark_index'%}"> <font style="color:#FFFFFF; font-weight:800;font-size:130%;">个人中心</font> </a> </li>
+        {% endcomment %}
+		{% endif %}
+
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+		{% if user.is_authenticated %}
+        <li><font style="color:#000000; font-weight:800; font-size:14px;">{{ user.username }}</font></li>
+		  <li><a href="/password_change"><font style="color:#000000; font-weight:800;">修改密码</font></a></li>
+		  <li><a href="/logout?next={%url 'dongtai_all'%}"><font style="color:#000000; font-weight:800;">退出</font></a></li>
+		{% else %}
+		<form role="login" class="navbar-form navbar-right" method="post" action="{%url 'login'%}">
+		  {% csrf_token %}
+		  <div class="form-group">
+			<input type="text" class="form-control" id="username" name="username" placeholder="用户名" size="8">
+			<input type="password" class="form-control" id="password" name="password" placeholder="密码" size="8">
+		  </div>
+		  <input type="hidden" name="next" value="{{request.get_full_path}}"/>
+		  <button type="submit" class="btn btn-warning">登录</button>
+		</form>
+		{% endif %}
+
+    {% if 'q' not in request.GET %}
+    <form class="navbar-form navbar-left" role="search" method="get" action="{% url 'dongtai_search'%}" target="_blank">
+        <div class="input-group">
+            <input type="text" class="search-query form-control" placeholder="Search" name="q" size='8'>
+            <span class="input-group-btn">
+                <button class='btn btn-danger' type='submit'>
+                    <span class='glyphicon glyphicon-search'></span>
+                </button>
+            </span>
+        </div>
+    </form>
+    {% endif %}
+
+      </ul>
+    </div><!-- /.navbar-collapse -->
+
+
+</nav>
+
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+    <div class="search-footer">
+      <p class="text-center">Copyright 2015 联系电话：XXXXXXXXX</p>
+    </div>
+
+    <script src="{% static 'solr/js/bootstrap.min.js' %}"></script>
+{% block other_footer %}
+{% endblock %}
+
+  </body>
+</html>

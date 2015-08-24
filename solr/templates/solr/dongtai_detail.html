@@ -1,0 +1,22 @@
+{% extends "solr/base.html" %}
+{% load staticfiles %}
+{% block other_head %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-12">
+            {% if text %}
+            {% if document.title %}
+            <p>
+            <h3 style='text-align:center;'><strong>{{ document.title | safe }}</strong></h3>
+            {% endif %}
+            <h4 style='text-align:left;'>来源：<a href='{{ document.url }}'>{{ document.url }}</a> </h4>
+            <h4 style='text-align:left;'>采集时间：{{ document.processed_at }}</h4>
+            </p>
+            <hr>
+            <pre>{{ text | safe }}</pre>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
