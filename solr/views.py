@@ -62,6 +62,8 @@ class SearchView(View):
             if sites_filter:
                 query['fq'] = [sites_filter]
 
+        print query
+
 
         if self.hl_fl:
             query.update({'hl.fl':self.hl_fl, 'hl.simple.pre':self.hl_pre,
@@ -269,7 +271,6 @@ class AllDongtaiView(DongtaiSearchView):
                             content_type="application/json")
 
 
-
     def change_query(self, request, query):
         query['f.site.facet.sort'] = 'index'
         query['f.site.facet.limit'] = -1
@@ -406,7 +407,7 @@ def parse_date(format, date_str):
 def user_sites_filter(request):
 # 省院组用户能看到所有监控
     if len(request.user.groups.all()) > 0:
-        if request.user.groups.all()[0].name == '省院':
+        if request.user.groups.all()[0].name == u'省院':
                 return None
     name = request.user.get_username()
     t_user = User.objects.get(username=name)

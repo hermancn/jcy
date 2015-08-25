@@ -1,0 +1,32 @@
+{% extends 'solr/base.html' %}
+{% load staticfiles %}
+<link href="{% static 'statistic/css/bootstrap-table.min.css' %}" rel="stylesheet">
+<script src="{% static 'statistic/js/bootstrap-table.min.js' %}" rel="stylesheet"></script>
+{% block other_head %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-12">
+            <h2 style='text-align:center;'><strong>基本情况数据表</strong></h2>
+            <table id="table-pagination" data-url="{{ data_json }}" data-height="400" data-pagination="true" data-search="true">
+                <thead>
+                    <tr>
+                        <th data-field="name" data-align="right" data-sortable="true">网站名称</th>
+                        <th data-field="url" data-align="center" data-sortable="true">URL地址</th>
+                        <th data-field="regdate" data-sortable="true" data-sorter="priceSorter">注册时间</th>
+                        <th data-field="department" data-sortable="true" data-sorter="priceSorter">管理部门</th>
+                        <th data-field="total_count" data-sortable="true" data-sorter="priceSorter">总信息数量</th>
+                        <th data-field="today_count" data-sortable="true" data-sorter="priceSorter">本日更新</th>
+                        <th data-field="month_count" data-sortable="true" data-sorter="priceSorter">本月更新</th>
+                        <th data-field="year_count" data-sortable="true" data-sorter="priceSorter">本年更新</th>
+                        <th data-field="alarm_count" data-sortable="true" data-sorter="priceSorter">预报警信息数</th>
+                        <th data-field="unhandled_count" data-sortable="true" data-sorter="priceSorter">待处理记录数</th>
+                    </tr>
+                </thead>
+            </table>
+
+
+    </div>
+{% endblock %}
+
