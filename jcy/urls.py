@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', login_required(views.AllDongtaiView.as_view()), name='home'),
     url(r'^dongtai/', include('solr.urls')),
+    url(r'^statistic/', include('statistic.urls')),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout'),
     url(r'^password_change/$', 'django.contrib.auth.views.password_change',{'template_name':'registration/mypassword_change_form.html',

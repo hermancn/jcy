@@ -47,19 +47,19 @@ class SearchView(View):
         keywords_filter = get_keywords_filter()
 
         if not q:
-            q = 'page' + '(' + keywords_filter + ')'
+            q = 'page:' + '(' + keywords_filter + ')'
         else:
-            q = 'page' + '(' + keywords_filter + ' OR '+ q +')'
+            q = 'page:' + '(' + keywords_filter + ' OR '+ q +')'
 
         query = {'q' : q, 'rows': rows, 'start': start, 'fl': self.fl, 'hl':
                  'true',  'facet':  'true'}
 
         sites_filter = user_sites_filter(request)
         if 'fq' in query:
-            if not sites_filter:
+            if sites_filter:
                 query['fq'].append(sites_filter)
         else:
-            if not sites_filter:
+            if sites_filter:
                 query['fq'] = [sites_filter]
 
 
@@ -254,10 +254,12 @@ class AllDongtaiView(DongtaiSearchView):
     def post(self, request, *args, **kwargs):
         article_id = request.POST.get('article_id')
         msg = request.POST.get('msg')
+        article_site = request.POST.get('article_site')
         article_status = request.POST.get('article_status')
 
         handle_msg = HandleMsg()
         handle_msg.user_name = request.user.get_username()
+        handle_msg.article_site = article_site
         handle_msg.handle_msg = msg
         handle_msg.article_id = article_id
         handle_msg.article_status = article_status
@@ -402,8 +404,10 @@ def parse_date(format, date_str):
 
 
 def user_sites_filter(request):
-    if request.user.is_superuser:
-        return None
+# 省院组用户能看到所有监控
+    if len(request.user.groups.all()) > 0:
+        if request.user.groups.all()[0].name == '省院':
+                return None
     name = request.user.get_username()
     t_user = User.objects.get(username=name)
 

@@ -26,6 +26,7 @@
                     <label for="msg_time">处理时间: {{doc.msg_time}}</label><br>
                 {% endif %}
                 <input type="hidden" id="article_id" value="{{ doc.id }}"/>
+                <input type="hidden" id="article_site" value="{{ doc.site }}"/>
                 <input type="text" placeholder="处理意见" id="msg"
                     class="form-control" value="{% if doc.handle_msg %}{{ doc.handle_msg }}{%endif%}"/>
                 {% comment %}
@@ -133,7 +134,7 @@
         $.ajax({
             url: "{% url 'dongtai_all' %}",
             type: 'POST',
-            data: {msg: $('#msg').val(), article_id: $('#article_id').val(),
+            data: {msg: $('#msg').val(), article_site: $('#article_site').val(), article_id: $('#article_id').val(),
                 article_status: click_value},
             success: function(json) {
                 console.log('success');

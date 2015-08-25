@@ -5,7 +5,7 @@ from django.db import models
 
 class SearchLog(models.Model):
     user_name = models.CharField('用户', max_length=250)
-    access_time = models.DateTimeField('访问日期', default=lambda: datetime.now(), editable=False)
+    access_time = models.DateTimeField('访问日期', default=datetime.now, editable=False)
     site = models.CharField('信息源', max_length=200, null=True, blank=True)
     filter_query = models.CharField('过滤检索式', max_length=500, null=True, blank=True)
     query = models.CharField('检索式', max_length=500, null=True, blank=True)
@@ -20,7 +20,7 @@ class SearchLog(models.Model):
 
 class DocumentLog(models.Model):
     user_name = models.CharField('用户', max_length=250)
-    access_time = models.DateTimeField('访问日期', default=lambda: datetime.now(), editable=False)
+    access_time = models.DateTimeField('访问日期', default=datetime.now, editable=False)
     site = models.CharField('信息源', max_length=200, null=True, blank=True)
     category = models.CharField('信息类别', max_length=200, null=True, blank=True)
     document_id = models.CharField('文档编号', max_length=500)
@@ -34,10 +34,11 @@ class DocumentLog(models.Model):
 
 class HandleMsg(models.Model):
     article_id = models.CharField('文章id', primary_key=True, max_length=100)
-    user_name = models.CharField(u'用户', max_length=100)
+    user_name = models.CharField('用户', max_length=100)
+    article_site = models.CharField('文章来源', max_length=100)
     article_status = models.CharField('文章状态', max_length=20)
     handle_msg = models.TextField('处理意见', blank=True)
-    msg_time = models.DateTimeField(default=lambda:datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S'),
+    msg_time = models.DateTimeField(default=datetime.now,
                                     editable=False)
 
     class Meta:

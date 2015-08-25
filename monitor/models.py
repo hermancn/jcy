@@ -55,5 +55,5 @@ class WebSite(models.Model):
 
 
 class Monitor(models.Model):
-    user = models.OneToOneField(User)
-    dept_name = models.OneToOneField(Department)
+    user = models.OneToOneField(User, primary_key=True)
+    dept_name = models.ForeignKey(Department)
