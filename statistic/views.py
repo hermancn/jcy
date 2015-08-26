@@ -18,9 +18,26 @@ from solr.models import HandleMsg
 from solr.views import get_keywords_filter
 
 
+class JsondataView(View):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('query')
+        if query == 'all':
+            data_json = []
+            user_sites = get_user_sites(request)
+            for site in user_sites:
+                site.update(get_site_count(site['name']))
+                data_json.append(site)
+
+            data = {}
+            data['rows'] = data_json
+            data['total'] = len(data_json)
+
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+
 
 class AllStatisticView(View):
-    template = 'sites_all.html'
+    template = 'statistic/sites_all.html'
 
     def get(self, request, *args, **kwargs):
         context = {}
@@ -33,7 +50,6 @@ class AllStatisticView(View):
         context['data_json'] = data_json
 
         this_template = self.get_template(request)
-
 
         #return HttpResponse(json.dumps(data_json), content_type='application/json')
         return render(request, this_template, context)

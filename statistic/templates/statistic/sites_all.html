@@ -1,0 +1,45 @@
+{% extends 'solr/base.html' %}
+{% load staticfiles %}
+{% block other_head %}
+<link href="{% static 'statistic/css/bootstrap-table.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-12">
+            <h2 style='text-align:center;'><strong>基本情况数据表</strong></h2>
+            <table data-toggle="table"
+               data-toolbar="#get"
+               data-url="http://localhost:8000/statistic/data/?query=all"
+               data-pagination="true"
+               data-side-pagination="server"
+               data-page-list="[5, 10, 20, 50, 100, 200]"
+               data-search="true"
+               data-height="400"
+               data-query-params="queryParams">
+            <thead>
+            <tr>
+                <th data-field="name" data-align="right">网站名称</th>
+                <th data-field="url" data-align="center">URL地址</th>
+                <th data-field="regdate" data-sortable="true">注册时间</th>
+                <th data-field="department">管理部门</th>
+                <th data-field="total_count" data-sortable="true" >总信息数量</th>
+                <th data-field="today_count" data-sortable="true" >本日更新</th>
+                <th data-field="month_count" data-sortable="true" >本月更新</th>
+                <th data-field="year_count" data-sortable="true" >本年更新</th>
+                <th data-field="alarm_count" data-sortable="true" >预报警信息数</th>
+                <th data-field="unhandled_count" data-sortable="true" >待处理记录数</th>
+            </tr>
+            </thead>
+        </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block other_footer %}
+<script src="{% static 'statistic/js/bootstrap-table.min.js' %}" rel="stylesheet"></script>
+<script src="{% static 'statistic/js/bootstrap-table-zh-cn.js' %}" rel="stylesheet"></script>
+{% endblock %}
+
+
