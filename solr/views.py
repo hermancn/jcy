@@ -18,7 +18,7 @@ from .models import SearchLog
 import html2text
 
 from jcy.settings import SOLR_SERVER
-from monitor.models import Monitor, WebSite, Department, Keywords
+from monitor.models import Monitor, WebSite, Keywords
 from .models import HandleMsg
 
 
@@ -259,13 +259,13 @@ class AllDongtaiView(DongtaiSearchView):
         article_site = request.POST.get('article_site')
         article_status = request.POST.get('article_status')
 
-        handle_msg = HandleMsg()
-        handle_msg.user_name = request.user.get_username()
-        handle_msg.article_site = article_site
-        handle_msg.handle_msg = msg
-        handle_msg.article_id = article_id
-        handle_msg.article_status = article_status
-        handle_msg.save()
+        hm = HandleMsg()
+        hm.user_name = request.user.get_username()
+        hm.article_site = article_site
+        hm.handle_msg = msg
+        hm.article_id = article_id
+        hm.article_status = article_status
+        hm.save()
 
         return HttpResponse(json.dumps({"result": "ok"}),
                             content_type="application/json")

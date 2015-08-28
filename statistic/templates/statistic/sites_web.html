@@ -15,7 +15,7 @@
 {% block content %}
 <div class="container">
 <div class="col-md-10 col-md-offset-1">
-    <h2 style='text-align:center;'><strong>基本情况数据表</strong></h2>
+    <h2 style='text-align:center;'><strong>网站情况数据表</strong></h2>
     <div id="toolbar">
         <select class="form-control">
             <option value="all">导出全部</option>
@@ -24,30 +24,28 @@
     </div>
     <table id="table"
            data-toggle="table"
-           data-url="http://localhost:8000/statistic/data/?query=all"
+           data-url="http://localhost:8000/statistic/data/?query=web"
            data-pagination="true"
            data-click-to-select="true"
            data-striped="true"
-           data-search="true"
            data-show-export="true"
            data-show-columns="true"
            data-show-refresh="true"
            data-toolbar="#toolbar"
            data-sort-name="alarm_count"
            data-sort-order="desc" >
+
            <thead>
                <tr>
                    <th data-field="state" data-checkbox="true"></th>
-                   <th data-field="name" data-align="right">网站名称</th>
-                   <th data-field="url" data-align="center">URL地址</th>
-                   <th data-field="regdate" data-sortable="true">注册时间</th>
-                   <th data-field="department" data-sortable="true">管理部门</th>
-                   <th data-field="total_count" data-sortable="true" >总信息数量</th>
-                   <th data-field="today_count" data-sortable="true" >本日更新</th>
-                   <th data-field="month_count" data-sortable="true" >本月更新</th>
-                   <th data-field="year_count" data-sortable="true" >本年更新</th>
-                   <th data-field="alarm_count" data-sortable="true">预报警信息数</th>
-                   <th data-field="unhandled_count" data-sortable="true" >待处理记录数</th>
+                   <th data-field="web_count" data-align="center">网站数量</th>
+                   <th data-field="total_count" data-align="center">总信息数量</th>
+                   <th data-field="today_count">本日更新</th>
+                   <th data-field="month_count">本月更新</th>
+                   <th data-field="year_count">本年更新</th>
+                   <th data-field="alarm_count">预报警信息数</th>
+                   <th data-field="problem_count" >问题记录数</th>
+                   <th data-field="unhandled_count">待处理记录数</th>
                </tr>
            </thead>
     </table>

@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{% block subtitle %}{% endblock %}动态信息转播服务系统</title>
+    <title>{% block subtitle %}{% endblock %}服务系统</title>
     {% load staticfiles %}
     <!-- Bootstrap core CSS -->
     <link href="{% static 'solr/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -75,9 +75,8 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li {%if 'dongtai/all' in request.get_full_path or request.get_full_path == '/'%}class="active"{%endif%}> <a href="{%url 'dongtai_all'%}"> <font style="color:#FFFFFF; font-weight:800; font-size:130%;">首页</font> </a> </li>
-        {% comment %}
-        <li {%if 'dongtai/new' in request.get_full_path%}class="active"{%endif%}> <a href="{%url 'dongtai_new'%}"> <font style="color:#FFFFFF; font-weight:800;font-size:130%;">最新动态</font> </a> </li>
-        {% endcomment %}
+        <li {%if 'statistic/base' in request.get_full_path%}class="active"{%endif%}> <a href="{%url 'statistic_all'%}"> <font style="color:#FFFFFF; font-weight:800;font-size:130%;">情况统计</font> </a> </li>
+        <li {%if 'statistic/web' in request.get_full_path%}class="active"{%endif%}> <a href="{%url 'statistic_web'%}"> <font style="color:#FFFFFF; font-weight:800;font-size:130%;">网站分析</font> </a> </li>
 
 		{% if user.is_authenticated %}
         {% comment %}
