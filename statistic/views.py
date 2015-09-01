@@ -107,8 +107,10 @@ def get_user_sites(request):
         site_data['name'] = site.website_name
         site_data['url'] = site.url
         site_data['regdate'] = site.regdate.strftime('%Y-%m-%d')
-        site_data['department'] = dept
+        site_data['department'] = dept.dept_name
         sites_list.append(site_data)
+
+    print sites_list
 
     return sites_list
 

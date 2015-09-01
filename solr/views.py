@@ -62,8 +62,6 @@ class SearchView(View):
             if sites_filter:
                 query['fq'] = [sites_filter]
 
-        print query
-
 
         if self.hl_fl:
             query.update({'hl.fl':self.hl_fl, 'hl.simple.pre':self.hl_pre,
@@ -270,12 +268,10 @@ class AllDongtaiView(DongtaiSearchView):
         return HttpResponse(json.dumps({"result": "ok"}),
                             content_type="application/json")
 
-
     def change_query(self, request, query):
         query['f.site.facet.sort'] = 'index'
         query['f.site.facet.limit'] = -1
         query['facet.sort'] = 'count'
-
 
     def populate_other_context(self, request, query_response, context):
         pivot_nodes = []
@@ -349,6 +345,7 @@ def parse_facet_parameters(facet_filters):
         return altered_facet_filters, facet_fields
     return None
 
+
 def highlight(query_response, id_field):
     if query_response.highlighting:
         for doc in query_response.documents:
@@ -405,16 +402,19 @@ def parse_date(format, date_str):
 
 
 def user_sites_filter(request):
-# 省院组用户能看到所有监控
+    # 省院组用户能看到所有监控，除此之外的用户能看到自己权限内的网站。
+    # 注意在用户建立时添加所属用户组
+
     if len(request.user.groups.all()) > 0:
         if request.user.groups.all()[0].name == u'省院':
-                return None
-    name = request.user.get_username()
-    t_user = User.objects.get(username=name)
+            websites = WebSite.objects.all()
+        else:
+            name = request.user.get_username()
+            t_user = User.objects.get(username=name)
 
-    monitor = Monitor.objects.get(user=t_user)
-    dept = monitor.dept_name
-    websites = WebSite.objects.filter(dept_name=dept)
+            monitor = Monitor.objects.get(user=t_user)
+            dept = monitor.dept_name
+            websites = WebSite.objects.filter(dept_name=dept)
 
     sites_list = []
     for site in websites:
@@ -422,6 +422,7 @@ def user_sites_filter(request):
 
     sites_filter = 'site:' + '(' + ' OR '.join(sites_list) + ')'
     return sites_filter
+
 
 def get_keywords_filter():
     keywords = []
