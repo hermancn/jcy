@@ -1,0 +1,10 @@
+*{margin:0;padding:0;word-break: normal;word-wrap: break-word; text-align:justify;}
+body{padding:0px auto ;margin:0 auto; font-family:"宋体";font-size:12px; background:#fff; overflow-x:hidden;}
+a,p,dl,dt,dd,ul,li,h2,h1,h3,h4,h5,h6,table,tr,td,form,iframe,font,em,i{ font-size:12px; font-weight:normal;word-break: normal;word-wrap: break-word; text-align:justify; font-style:normal; margin-bottom:0; margin-top:0px; padding-bottom:0; padding-top:0; }
+a{text-decoration:none;outline:none;-moz-outline:none;}
+a:hover{ text-decoration:none;}
+p{word-break: normal;word-wrap: break-word; text-align:justify;}
+img{ border:none;}
+li{ list-style:none;}
+input {outline: none;}
+textarea {outline: none;}

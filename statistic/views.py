@@ -50,6 +50,7 @@ class JsondataView(View):
         return HttpResponse(json.dumps(data_json), content_type='application/json')
 
 
+
 class AllStatisticView(View):
     template = 'statistic/sites_all.html'
 

@@ -405,6 +405,7 @@ def user_sites_filter(request):
     # 省院组用户能看到所有监控，除此之外的用户能看到自己权限内的网站。
     # 注意在用户建立时添加所属用户组
 
+    websites = WebSite.objects.all()
     if len(request.user.groups.all()) > 0:
         if request.user.groups.all()[0].name == u'省院':
             websites = WebSite.objects.all()
